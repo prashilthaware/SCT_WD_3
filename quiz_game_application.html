@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Quiz Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .quiz-container {
+      background: #1e1e2f;
+      padding: 20px;
+      border-radius: 15px;
+      width: 400px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    h2 {
+      margin-bottom: 15px;
+    }
+
+    .option {
+      display: block;
+      margin: 8px 0;
+      padding: 10px;
+      background: #2e2e4f;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .option:hover {
+      background: #3e3e6f;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      background: #4caf50;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #45a049;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h2 id="question">Question</h2>
+    <div id="options"></div>
+    <input type="text" id="fillInput" style="display:none" placeholder="Type your answer">
+    <button onclick="nextQuestion()">Next</button>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+    type: "single",
+    question: "What is the capital of India?",
+    options: ["Mumbai", "Delhi", "Chennai", "Kolkata"],
+    answer: "Delhi"
+  },
+  {
+    type: "single",
+    question: "Which language is used for web styling?",
+    options: ["HTML", "CSS", "Java", "Python"],
+    answer: "CSS"
+  },
+  {
+    type: "single",
+    question: "Who is known as the father of computers?",
+    options: ["Charles Babbage", "Newton", "Einstein", "Tesla"],
+    answer: "Charles Babbage"
+  },
+  {
+    type: "single",
+    question: "Which company developed Java?",
+    options: ["Microsoft", "Sun Microsystems", "Google", "Apple"],
+    answer: "Sun Microsystems"
+  },
+  {
+    type: "single",
+    question: "Which tag is used for paragraph in HTML?",
+    options: ["p", "h1", "div", "span"],
+    answer: "p"
+  },
+  {
+    type: "single",
+    question: "Which is not a programming language?",
+    options: ["Python", "Java", "HTML", "C++"],
+    answer: "HTML"
+  },
+  {
+    type: "single",
+    question: "What does CPU stand for?",
+    options: ["Central Processing Unit", "Computer Personal Unit", "Central Print Unit", "Control Processing Unit"],
+    answer: "Central Processing Unit"
+  },
+  {
+    type: "single",
+    question: "Which is a JavaScript framework?",
+    options: ["React", "Django", "Flask", "Laravel"],
+    answer: "React"
+  },
+  {
+    type: "single",
+    question: "Which symbol is used for comments in JavaScript?",
+    options: ["//", "#", "<!-- -->", "**"],
+    answer: "//"
+  },
+  {
+    type: "single",
+    question: "Which database is NoSQL?",
+    options: ["MySQL", "MongoDB", "Oracle", "PostgreSQL"],
+    answer: "MongoDB"
+  },
+      
+      {
+    type: "multi",
+    question: "Which are programming languages?",
+    options: ["Python", "HTML", "Java", "CSS"],
+    answer: ["Python", "Java"]
+  },
+  {
+    type: "multi",
+    question: "Which are frontend technologies?",
+    options: ["HTML", "CSS", "JavaScript", "Node.js"],
+    answer: ["HTML", "CSS", "JavaScript"]
+  },
+  {
+    type: "multi",
+    question: "Which are backend technologies?",
+    options: ["Node.js", "Django", "React", "Flask"],
+    answer: ["Node.js", "Django", "Flask"]
+  },
+  {
+    type: "multi",
+    question: "Which are databases?",
+    options: ["MySQL", "MongoDB", "HTML", "CSS"],
+    answer: ["MySQL", "MongoDB"]
+  },
+  {
+    type: "multi",
+    question: "Which are JavaScript frameworks?",
+    options: ["React", "Angular", "Vue", "Laravel"],
+    answer: ["React", "Angular", "Vue"]
+  },
+  {
+    type: "multi",
+    question: "Which are operating systems?",
+    options: ["Windows", "Linux", "MacOS", "Python"],
+    answer: ["Windows", "Linux", "MacOS"]
+  },
+  {
+    type: "multi",
+    question: "Which are cloud platforms?",
+    options: ["AWS", "Azure", "Google Cloud", "MySQL"],
+    answer: ["AWS", "Azure", "Google Cloud"]
+  },
+  {
+    type: "multi",
+    question: "Which are programming paradigms?",
+    options: ["OOP", "Functional", "Procedural", "HTML"],
+    answer: ["OOP", "Functional", "Procedural"]
+  },
+  {
+    type: "multi",
+    question: "Which are version control systems?",
+    options: ["Git", "SVN", "Docker", "Mercurial"],
+    answer: ["Git", "SVN", "Mercurial"]
+  },
+  {
+    type: "multi",
+    question: "Which are mobile development frameworks?",
+    options: ["Flutter", "React Native", "Angular", "Swift"],
+    answer: ["Flutter", "React Native", "Swift"]
+  },
+      {
+    type: "fill",
+    question: "The database MongoDB is ______ type.",
+    answer: "nosql"
+  },
+  {
+    type: "fill",
+    question: "HTTP stands for ______.",
+    answer: "hypertext transfer protocol"
+  },
+  {
+    type: "fill",
+    question: "Node.js is used for ______ development.",
+    answer: "backend"
+  },
+  {
+    type: "fill",
+    question: "API stands for ______.",
+    answer: "application programming interface"
+  }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = quizData[currentQuestion];
+      document.getElementById("question").innerText = q.question;
+      const optionsDiv = document.getElementById("options");
+      const fillInput = document.getElementById("fillInput");
+
+      optionsDiv.innerHTML = "";
+      fillInput.style.display = "none";
+
+      if (q.type === "single") {
+        q.options.forEach(opt => {
+          const btn = document.createElement("div");
+          btn.classList.add("option");
+          btn.innerHTML = `<input type="radio" name="option" value="${opt}"> ${opt}`;
+          optionsDiv.appendChild(btn);
+        });
+      } else if (q.type === "multi") {
+        q.options.forEach(opt => {
+          const btn = document.createElement("div");
+          btn.classList.add("option");
+          btn.innerHTML = `<input type="checkbox" value="${opt}"> ${opt}`;
+          optionsDiv.appendChild(btn);
+        });
+      } else if (q.type === "fill") {
+        fillInput.style.display = "block";
+      }
+    }
+
+    function getAnswer() {
+      const q = quizData[currentQuestion];
+
+      if (q.type === "single") {
+        const selected = document.querySelector("input[name='option']:checked");
+        return selected ? selected.value : null;
+      } else if (q.type === "multi") {
+        const selected = document.querySelectorAll("input[type='checkbox']:checked");
+        return Array.from(selected).map(el => el.value);
+      } else if (q.type === "fill") {
+        return document.getElementById("fillInput").value.toLowerCase();
+      }
+    }
+
+    function checkAnswer(userAnswer) {
+      const correct = quizData[currentQuestion].answer;
+
+      if (Array.isArray(correct)) {
+        if (JSON.stringify(userAnswer.sort()) === JSON.stringify(correct.sort())) {
+          score++;
+        }
+      } else {
+        if (userAnswer === correct) {
+          score++;
+        }
+      }
+    }
+
+    function nextQuestion() {
+      const userAnswer = getAnswer();
+      if (userAnswer === null || userAnswer.length === 0) {
+        alert("Please select an answer!");
+        return;
+      }
+
+      checkAnswer(userAnswer);
+      currentQuestion++;
+
+      if (currentQuestion < quizData.length) {
+        loadQuestion();
+      } else {
+        document.querySelector(".quiz-container").innerHTML = `<h2>Your Score: ${score}/${quizData.length}</h2>`;
+      }
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
